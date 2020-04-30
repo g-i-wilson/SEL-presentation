@@ -1,0 +1,76 @@
+Project overview
+	Battery powered CO detector (marine use)
+	Figaro sensor
+	specs
+	Figaro op-amp circuit
+Design functional specs
+	OSHA exposure CO levels
+		https://gaslab.com/blogs/articles/carbon-monoxide-levels-chart
+		https://www.kidde.com/home-safety/en/us/support/help-center/browse-articles/articles/what_are_the_carbon_monoxide_levels_that_will_sound_the_alarm_.html
+	Sleeping area audibility requirements
+		https://www.access-board.gov/guidelines-and-standards/transportation/32-passenger-vessels/373-summary-of-nfpa-72-national-fire-alarm-code-2007-standard
+		75dB minimum
+	Power
+		2 AA batteries
+	Battery life
+		https://nfpa.org/-/media/Files/Public-Education/Resources/Community-tool-kits/smoke-alarm-kit/Talking_points.ashx
+		1 year minimum
+Design breakdown
+	analog front-end
+		amplification
+			leakage currents
+			op-amp circuit stability
+			general feedback loop stability
+		instrumentation amplifier
+			possible alternative: a switched capacitor before in-amp
+				https://www.analog.com/en/products/ltc6943.html
+			improvement: guarded traces (see INA116)
+				https://www.ti.com/lit/ds/sbos034/sbos034.pdf?ts=1588264952402
+		noise reduction
+			sensor noise was temperature dependent
+	extremely low pass filtering dilema
+		analog too touchy (experience in college, methane drop sensor)
+		must be in digital
+	analog-digital conversion
+		analog anti-aliasing filter
+			why does this need to be analog? inifinite bandwidth -> finite (at less than -3db)
+		bandwidth of ADC
+			aliasing and nyquist theorem
+		digital filtering
+			FIR
+				always stable				
+				simple to create windowed-sinc FIR filter
+					inverse-fourier transform of rectangular is sinc
+				more taps required for FIR filter, so higher minimum sampling rate
+				for a given sample rate, have a long (but linear) phase delay
+			IIR
+				can be unstable (similar to analog op-amp filters)
+				require only a few taps to implement 4 pole filter
+				low phase delay
+				https://en.wikipedia.org/wiki/Digital_biquad_filter
+				https://www.dsprelated.com/showarticle/1119.php
+	Power concerns
+		battery life -> MCU awake-time -> maximum sample rate
+		sleep and turn off unnecessary circuitry
+			https://www.ti.com/lit/ds/symlink/tps22860.pdf?ts=1588279438983
+	PCB design
+		analog/digital power and ground separation
+		analog signal paths
+			guarded traces to reduce leakage current
+			return current in ground plane
+			increased trace separation
+			PCB coating
+		all reference grounds connect at one point
+Design for test
+	defining boundaries
+		sensor
+			characterize (or check characterization)
+		analog -> digital
+			apply artificial micro-amp signal
+			(serial port) record data curve aquired (compare to nominal data curve)
+		alarm sound output circuit
+			(serial port) trigger alarm circuit
+	periodic/manual self-test
+		?
+	
+			
