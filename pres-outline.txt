@@ -1,6 +1,8 @@
 Project overview
 	Battery powered CO detector (marine use)
 	Figaro sensor
+		https://cdn.sparkfun.com/assets/8/4/3/e/f/52a8c005757b7f292e8b456c.pdf
+		https://www.figaro.co.jp/en/product/docs/tgs5141-p00_technical%20infomation%28en%29_rev05.pdf
 	specs
 	Figaro op-amp circuit
 Design functional specs
@@ -22,10 +24,14 @@ Design breakdown
 			op-amp circuit stability
 			general feedback loop stability
 		instrumentation amplifier
+			https://www.analog.com/en/analog-dialogue/articles/common-problems-when-designing-amplifier-circuits.html
+			https://www.analog.com/media/en/training-seminars/design-handbooks/designers-guide-instrument-amps-complete.pdf
 			possible alternative: a switched capacitor before in-amp
 				https://www.analog.com/en/products/ltc6943.html
 			improvement: guarded traces (see INA116)
 				https://www.ti.com/lit/ds/sbos034/sbos034.pdf?ts=1588264952402
+			possible alternative: single-ended:
+				https://www.analog.com/media/en/technical-documentation/data-sheets/60812fd.pdf
 		noise reduction
 			sensor noise was temperature dependent
 	extremely low pass filtering dilema
@@ -40,6 +46,8 @@ Design breakdown
 			FIR
 				always stable				
 				simple to create windowed-sinc FIR filter
+					https://en.wikipedia.org/wiki/Sinc_filter
+					https://tomroelandts.com/articles/how-to-create-a-simple-low-pass-filter
 					inverse-fourier transform of rectangular is sinc
 				more taps required for FIR filter, so higher minimum sampling rate
 				for a given sample rate, have a long (but linear) phase delay
@@ -48,7 +56,10 @@ Design breakdown
 				require only a few taps to implement 4 pole filter
 				low phase delay
 				https://en.wikipedia.org/wiki/Digital_biquad_filter
-				https://www.dsprelated.com/showarticle/1119.php
+			-->	https://www.dsprelated.com/showarticle/1119.php
+				https://fiiir.com/
+				https://en.wikipedia.org/wiki/Butterworth_filter
+				
 	Power concerns
 		battery life -> MCU awake-time -> maximum sample rate
 		sleep and turn off unnecessary circuitry
