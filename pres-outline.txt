@@ -22,6 +22,7 @@ Design breakdown
 		amplification
 			leakage currents
 			op-amp circuit stability
+				https://www.ti.com/lit/an/slyt367/slyt367.pdf?ts=1588478423563
 			general feedback loop stability
 		instrumentation amplifier
 			https://www.analog.com/en/analog-dialogue/articles/common-problems-when-designing-amplifier-circuits.html
