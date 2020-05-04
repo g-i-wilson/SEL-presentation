@@ -5,6 +5,9 @@ Project overview
 		https://www.figaro.co.jp/en/product/docs/tgs5141-p00_technical%20infomation%28en%29_rev05.pdf
 	specs
 	Figaro op-amp circuit
+	MCU
+		part: https://www.cypress.com/file/138726/download
+		ADC: https://www.cypress.com/file/141076/download
 Design functional specs
 	OSHA exposure CO levels
 		https://gaslab.com/blogs/articles/carbon-monoxide-levels-chart
@@ -24,6 +27,8 @@ Design breakdown
 			op-amp circuit stability
 				https://www.ti.com/lit/an/slyt367/slyt367.pdf?ts=1588478423563
 			general feedback loop stability
+				feedback: https://www.allaboutcircuits.com/technical-articles/negative-feedback-part-4-introduction-to-stability/
+				phase margin: https://www.allaboutcircuits.com/technical-articles/negative-feedback-part-5-gain-margin-and-phase-margin/
 		instrumentation amplifier
 			https://www.analog.com/en/analog-dialogue/articles/common-problems-when-designing-amplifier-circuits.html
 			https://www.analog.com/media/en/training-seminars/design-handbooks/designers-guide-instrument-amps-complete.pdf
@@ -40,9 +45,14 @@ Design breakdown
 		must be in digital
 	analog-digital conversion
 		analog anti-aliasing filter
+			https://www.electronics-tutorials.ws/filter/filter_2.html
 			why does this need to be analog? inifinite bandwidth -> finite (at less than -3db)
 		bandwidth of ADC
 			aliasing and nyquist theorem
+			https://en.wikipedia.org/wiki/Nyquist%E2%80%93Shannon_sampling_theorem
+			https://www.maximintegrated.com/en/design/technical-documents/tutorials/3/3628.html
+			https://www.translatorscafe.com/unit-converter/en-US/calculator/aliasing-frequency/?f=39&fu=kHz&fs=44.1&fsu=kHz
+			https://dsp.stackexchange.com/questions/2456/alias-frequency-formula
 		digital filtering
 			FIR
 				always stable				
@@ -74,6 +84,7 @@ Design breakdown
 			PCB coating
 		all reference grounds connect at one point
 Design for test
+	CO levels: https://gaslab.com/blogs/articles/carbon-monoxide-levels-chart
 	defining boundaries
 		sensor
 			characterize (or check characterization)
