@@ -116,7 +116,9 @@ ADC
 		The general decay function can be written as y1 = y0e*e^(-t/tau).
 		We can estimate tau as the time required for the decay function to loose 37% (1/e).
 		for these graphs (from the datasheet), a conservative estimate of tau might be 10 seconds.
-		As I was reviewing background 
+		As I was reviewing these slides and double checking some of the information, I realize that the convention for bandwidth based on tau is 1/2*pi*tau, which makes the band of interest about 1/7 of 0.1 Hz.
+		So 0.1 Hz is an overestimate, but it may be good to allow a larger bandwidth, depending on the actual frequency response of the sensor.
+		
 	
 	
 		
