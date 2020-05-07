@@ -1,0 +1,5 @@
+Project Overview
+	About 6 ago I was working for a company that made fire and gas safety equipment.
+	In one of their carbon monoxide detection products, the CO sensing element part was being obseleted and discontinued by its manufacturer.
+	At that time a different sensing element (from a different manufacturer) was being used in some CO detection products by other industry competitors, and I was asked to start prototyping some hardware with this particular CO sensing element.
+	
