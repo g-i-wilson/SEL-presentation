@@ -1,5 +1,115 @@
 Project Overview
-	About 6 ago I was working for a company that made fire and gas safety equipment.
-	In one of their carbon monoxide detection products, the CO sensing element part was being obseleted and discontinued by its manufacturer.
-	At that time a different sensing element (from a different manufacturer) was being used in some CO detection products by other industry competitors, and I was asked to start prototyping some hardware with this particular CO sensing element.
+	Blue
+		About 6 years ago I was working for a company that made fire-safety and gas detection equipment.
+		In one of their carbon monoxide detection products targeted at the marine watercraft market, the CO sensing element part was being obseleted and discontinued by its manufacturer.
+	Project Overview (no sub-title)	
+		At that time, there was a different sensing element (by a different manufacturer) that was used in several CO detection products by competitors in the same industry (shown upper left).
+		So myself and a more senior engineer were asked to start prototyping with that particular CO sensing element.
+		Eventually, due to some higher profile projects, this project primarily fell to me.
+		While I was with the company, the project was only at the prototyping level, but the eventual goal was a replacement product for the CO detector.
+		This includes standard safety certifications applicable to marine safety products.
+		The CO sensing element manufacturer provides a reference circuit in the data sheet, shown here.
+		The staring point for this project was to implement the reference circuit and start aquiring data across temperature ranges, via an environmental test chamber.
+		Some thermal offset data is provided in the data sheet, but I needed to actually implement circuitry and start verifying that I could duplicate the what was in the datasheet.
+System Diagram
+	Blue
+		So let's talk about how we break down development for a project like a CO detector.
+		What is the modular hierarchy that might make up a system like this?
+	Generic Data Acquisition System
+		Here is a diagram of modules in a generic system that could obtain sensor data and translate that data into a format or actions that are understandable to humans.
+		First of all, there must be some kind of sensing element.  The element is acted on by its environment and that causes changes in some measurable physical properties of the element.
+		Typically we're talking about physical properties that are electrically measureable.
+		In most designs, the first objective is to convert continuous-time analog signals with non-limited bandwidth into descrete-time signals, which are bandwidth-limited (the ADC module).
+		Once we have quantized values to work with, we can do additional signal processing and store/retrieve that data as often as we like, without signal degredation.
+		The logic module is typically the core module of this kind of system, and may be inplemented in many ways, such as C-code in an MCU or digital logic on an FPGA.
+	CO Detector Black Box
+		So the previous slide displayed an internal or white-box abstraction of a generic system that could be used to implement such things as a CO Detector.
+		Before I get into the specific functionality of each internal module in this CO detection system, we'll start with a top-level functional abstraction.
+		Since this was an internal prototype project, some of the top-level functionality was not comprehensively defined.
+		Typically, best practice is to clearly define the top-level functionality at the beginning.
+		Obviously, in real life, top-level functionality is often modified as you dig into the internals, but at least you have a baseline.
+		[point out aspects of the CO detector]
+	CO Detector System Diagram
+		Here we see the building blocks resolved down a more implementation-specific design.
+		The generic modules are still present, but some modules are grouped under a larger module and some details are specified.
+		[point out aspects of the diagram]
+Analog Signal Processing
+	Blue
+		Let's talk about some details that go into the analog signal processing stage.
+		This module is the interconnect between the sensing element and the ADC, sometimes referred to as the signal path or signal conditioning.
+	CO Sensor Circuit
+		To design signal processing circuitry for a sensing element, we need to understand the physics of the element.
+		One of the things we can do is to create an equivalent circuit for the element.
+		This op-amp circuit on the right is from the datasheet for the CO sensor, and is a simple transimpedance amplifier circuit.
+		This just means that this circuit converts a current to a voltage.  Alternatively, you could think of it as just a normal inverting amp circuit, if you take think of the internal resistance of the sensor as R2.
+		In ideal operation, this circuit presents a virtual short-circuit to the sensor, and converts sensor current into a voltage across R1, which is also Vout.
+		As I breadboarded this and similar circuits, connected the output to data acquisition recorders, and ran it inside of an environmental chamber throughout the temperature range, there were several things that I remember observing.
+		- The susceptability to noise seemed to vary a lot with temperature.
+		- The stability of the op-amp circuit also varied with temperature (at least for the op-amps and components I was using).
+		Even with C1 helping to limit bandwidth, increasing phase margin, there was at least one occurance I remember observing an op-amp circuit that I thought was stable, start to oscillate.
+		I showed it to the more senior engineer who I was working with at the time, and we came to the following conclusions:
+		- We could spend a lot of time trying to ensure stability at all temperatures and (hopefully) for all situations, but we will still might not have perfect faith in the circuit's reliability -- especially in humid and adverse marine environments.
+		- We could instead find a simpler alternative and trade precision for higher reliability.
+		Before we look at what I ended up chosing for a simpler and more reliable circuit, let's talk about what can make an op-amp circuit unstable.
+	Negative Feedback (block diagram)
+		In a negative feedback system, the output tracks the input.
+		The amplification is a function of the difference (delta) between the input and the feedback loop.
+		There must be a small finite difference between the output and the input.  The higher the bandwidth of the loop, the smaller the delta.
+		The difference between the input and the output causes a small phase lag between the input and the output.
+		[cycle through slides and point out the delta]
+	Negative Feedback (op-amp)
+		1
+		An op-amp circuit is another example of negative feedback.
+		In an ideal op-amp circuit, the output swings opposite the input to maintain a 0 differential across the input.
+		So the input and output waveforms cancel.
+		In reality, there is always some finite phase lag in the feedback from the output.
+		2
+		Here I've introduced a tiny amount of lag in the feedback from the output, and now the input and feedback loop signals no longer cancel exactly.
+		3
+		Now the feedback loop phase lag is approaching 180 degrees, and instead of canceling, now the signals add.
+		When the phase lag in a negative feedback loop approaches 180 degrees, it becomes positive feedback, and the output becomes unstable.
+	Signal Path Implementation
+		Instead of designing a stable op-amp circuit from discrete components, I chose to simply place a resistor across the sensor, and measure the resulting voltage with a single instrumentation amplifier component.
+		There are several inherent benefits in this design:
+		- Pre-made amplification circuit with guaranty of stability throught the temperature range.
+		- Feedback loops are contained inside the component (with the exception of the gain-set resistor).
+		- Improved common-mode noise rejection.
+		- Exceptionally low input bias current and input offset.
+		An instrumentation amplifier circuit is really just a difference amplifier circuit with interconnected buffers at its inputs.
+		This circuit allows a decoupled differential signal source to be amplified and applied in a single-ended circuit.
+			(As long as the differential signal stays inside the boundaries of the positive and negative rail voltages.)
+		Instrumentation amplifier circuits are commonly sold as one monolithic component, so considerable effort by the manufacturer has been placed into component matching and output stability.
+		Instrumentation amplifiers reduce or eliminate many difficulties associated with receiving and amplifying a signal from a sensing element.
+	Signal Path Implemenation Improvements
 	
+	Guarded Traces
+	
+	Analog Ground Plane
+	
+	Non-ideal Capacitors
+	
+	Self Test
+	
+ADC
+	
+	Physical Restrictions
+	
+	Power
+	
+	Time
+	
+	Sampling Rate and Nyquist-Shannon Theorem
+		The Nyquist-Shannon theorem tells us that you must sample a periodic signal at a frequency greater than 2 times the frequency being sampled (note that it must be "greater than"; not "greater than or equal to").
+		If frequency 1 was sampled at the rate of 2 Hz (shown as blue circles), then the frequencies f*2 and f*3 can also be represented by those same
+			samples -- thus those higher frequencies "alias".
+		In fact, if a flat line was sampled at 2 Hz, then these same frequencies will still alias.
+		For any sampled frequency, the alias frequencies will be |fs - f|, |fs*2 - f|, |fs*3 - f|, and so on.
+	Frequency Aliasing
+	
+	
+	
+	
+	
+		
+		
+		
